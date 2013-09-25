@@ -6,6 +6,7 @@
   ],
   "main": "server.js",
   "dependencies": {
+    "hatch": "https://hatch-autologger:hatchpassword1@github.com/inventures/hatchjs/tarball/master",
     "express": "latest",
     "compound": "latest"
   },
