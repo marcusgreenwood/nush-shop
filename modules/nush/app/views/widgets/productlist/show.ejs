@@ -1,0 +1,30 @@
+<div class="product-list-holder-<%- displayMode %>">
+    <div class="product-list row-fluid">
+        <% posts.forEach(function (post, i) { %>
+            <%- renderContent(post, displayMode) %>
+
+            <% if ((i+1) % 3 === 0) { %>
+                </div><div class="product-list row-fluid">
+            <% } %>
+        <% }) %>
+    </div>
+
+    <% if (posts.length === 0) { %>
+        <p>
+            No products to display
+        </p>
+    <% } %>
+</div>
+
+<style>
+    .product-list-holder-view
+    {
+        padding : 10px 20px 0;
+    }
+
+    .product-list-holder-view .span4
+    {
+        margin-top : 10px;
+        margin-bottom: 10px;
+    }
+</style>

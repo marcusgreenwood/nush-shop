@@ -1,0 +1,15 @@
+productlist:
+  title: Product list
+  desctiption: Shows products on a page
+  icon: icon-picture
+  settings:
+    fields:
+      tags:
+        type: tags
+        tagsType: Content
+        title: Tags
+      displayMode:
+        type: select
+        options:
+          - view:List
+          - featured:Featured

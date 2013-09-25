@@ -1,0 +1,579 @@
+<% var form = formFor(post, {
+    remote: true,
+    action: (post.id ? pathTo.contentEntry(post.id) : pathTo.content) + '.json',
+    id: 'content-form',
+    class: 'content-form'
+}) %>
+
+<%- form.begin() %>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="module">
+            <div class="content">
+
+<input type="hidden" name="id" value="<%- post && post.id %>" />
+<input type="hidden" name="type" value="<%- post.type || type.name %>" />
+<input type="hidden" name="status" id="status" value="<%- post.status || 'published' %>" />
+<input type="hidden" name="stage" id="stage" value="<%- post.stage || req.query.stage == '1' || 'false' %>" />
+
+<% if(!post.id) { %>
+    <input type="hidden" name="stagePosition" id="stagePosition" value="0" />
+<% } %>
+
+<div class="row-fluid">
+    <div class="span8">
+
+<div class="well">
+    <div class="upload" id="upload-area">
+        <a href="#upload" id="upload-button">Drag images here or click to upload</a>
+        <small>
+            <a href="#url" id="add-by-url">or add by URL</a>
+        </small>
+    </div>
+</div>
+
+<div class="control-group" id="url-field" style="display : none;">
+    <div class="controls">
+        <input type="text" placeholder="<%- __('Paste in a URL and hit Enter') %>" class="span12" value="" />
+    </div>
+
+    <hr/>
+</div>
+
+<div id="main-image" style="display : none;">
+    <a href="#delete" class="delete"><i class="icon-remove"></i></a>
+    <img src="" />
+</div>
+
+<div id="upload-images">
+    <ul class="thumbnails">
+
+    </ul>
+</div>
+
+<div class="control-group">
+    <div class="controls">
+        <input type="text" id="title" name="title" placeholder="<%- __('Product title') %>" class="span12" value="<%- post.title %>" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        //add by url link
+        $('#add-by-url').on('click', function() {
+            $('#url-field').toggle();
+            $('#url-field input').focus();
+            return false;
+        });
+
+        //add by url field
+        $('#url-field input').on('keypress', function(e) {
+            if(e.charCode == 13) {
+                var src = $('#url-field input').val();
+                var extensions = ['.jpg', '.jpeg', '.gif'];
+                var validExtension = false;
+
+                for(var i in extensions) {
+                    if(src.toLowerCase().indexOf(extensions[i])) validExtension = true;
+                }
+
+                if(!validExtension || src.toLowerCase().indexOf('http') == -1) {
+                    alert('Oops, that doesn\'t look like a valid image URL');
+                    return false;
+                }
+
+                addImage(src);
+                updateThumbnails();
+                updateMainImage();
+
+                $('#url-field input').val('');
+                $('#url-field').toggle();
+
+                return false;
+            }
+        });
+
+        //upload
+        var uploader = new qq.FileUploader({
+            params: { _csrf: $('meta[name=csrf-token]').attr('content'), size: '<%- (post.stage || req.query.stage) ? '1653x930' : '' %>' },
+            element: $('#upload-button').get(0),
+            action: '<%- pathFor('upload').add -%>',
+            uploadButtonText: $('#upload-button').html(),
+            encoding: 'multipart',
+            allowedExtensions: ['jpg', 'jpeg', 'gif'],
+            onSubmit: function() {
+                $.blockUI({
+                    message: '<h3>Uploading</h3><p id="progress-indicator">Please wait...</p>',
+                    css: {
+                    border: 'none',
+                    padding: '15px',
+                    backgroundColor: '#000',
+                    '-webkit-border-radius': '10px',
+                    '-moz-border-radius': '10px',
+                    opacity: .5,
+                    color: '#fff'
+                }});
+            },
+            onComplete: function(id, filename, data) {
+                $.unblockUI();
+                $('#upload-area').addClass('small');
+
+                $.noty({ text: '<i class="icon-ok"></i> Upload complete', type: 'success' });
+
+                addImage(data.media);
+                updateThumbnails();
+                updateMainImage();
+            }
+        });
+
+        function addImage(data) {
+            $('#upload-area').addClass('small');
+
+            var li = $('<li class="span2"><a href="#delete" class="delete"><i class="icon-remove"></i></a><input type="hidden" name="attachments[]" value=\'' + JSON.stringify(data) + '\' /><a href="#" class="move"><img src="' + data.url + '" /></a></li>');
+                $('#upload-images ul');
+
+            $('#upload-images ul').append(li);
+        }
+
+        function updateThumbnails() {
+            var thumbnails = $('#upload-images img');
+            if(thumbnails.length <= 1) {
+                $('#upload-images').hide();
+            } else {
+                $('#upload-images').show();
+            }
+        }
+
+        function updateMainImage() {
+            var images = $('#upload-images img');
+
+            if(images.length > 0) {
+                var src = images.attr('src');
+
+                $('#main-image').show();
+                $('#main-image img').attr('src', src);
+            }
+            else {
+                $('#main-image').hide();
+                $('#upload-area').removeClass('small');
+            }
+        }
+
+        //allow sorting of images by dragging
+        $("#upload-images .thumbnails").sortable({
+            update: updateMainImage
+        });
+
+        $("#upload-images a.delete").on('click', function() {
+            $(this).parents('li').remove();
+            updateThumbnails();
+            updateMainImage();
+            return false;
+        });
+
+        $("#main-image a.delete").on('click', function() {
+            $("#upload-images li:first-child a.delete").trigger('click');
+            return false;
+        });
+
+        //add the existing images
+        <% (post.attachments || []).forEach(function(media) { %>
+            addImage(<%- JSON.stringify(media) %>);
+        <% }) %>
+
+        updateThumbnails();
+        updateMainImage();
+    });
+
+
+</script>
+
+<style>
+    #upload-images ul
+    {
+        display : block;
+        margin : 0;
+        padding : 0;
+    }
+
+    #upload-images ul li a.move
+    {
+        cursor : move;
+    }
+
+    #upload-images ul li a.delete
+    {
+        position : absolute;
+        margin : 1px;
+    }
+
+    #main-image img
+    {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    #main-image a.delete
+    {
+        position : absolute;
+        margin : 10px;
+        font-size : 20px;
+    }
+</style>
+
+
+
+
+        <div class="control-group">
+            <div class="controls">
+                <textarea id="text" name="text" placeholder="Enter some text..." class="richtext span12" rows="8"><%- post.text %></textarea>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <select id="tags" name="tags[]" multiple="multiple" class="span12 chzn-select-create" data-placeholder="<%= __('Enter tags...') %>">
+                    <% tags.forEach(function(tag) { %>
+                    <option<%- _.find(post.tags.items || [], function(t) { return t.id == tag.id }) ? ' selected="selected"':'' %> value="<%- tag.id %>"><%- tag.title %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <% if(post.id) { %>
+            <div class="btn-group pull-left" style="margin-right : 10px;">
+                <button type="submit" class="btn btn-primary" id="save-changes-button">Save changes</button>
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <% if(post.status != 'published') { %>
+                    <li><a href="#" id="publish-button"><i class="icon-ok"></i> Publish now</a></li>
+                    <% } %>
+                    <li><a href="#" id="save-as-draft"><i class="icon-save"></i> <%= __('Save as draft') %></a></li>
+                </ul>
+            </div>
+            <button class="btn" id="save-to-library"><%= __('Save to library') %></button>
+            <% } else { %>
+            <div class="btn-group pull-left" style="margin-right : 10px;">
+                <button type="submit" class="btn btn-primary" id="publish-button"><%= __('Publish now') %></button>
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="save-as-draft"><i class="icon-save"></i> <%= __('Save as draft') %></a></li>
+                </ul>
+            </div>
+            <button class="btn" id="save-to-library"><%= __('Save to library') %></button>
+            <% } %>
+
+            <a href="<%- post.id ? pathTo.backToList : pathTo.content %>" class="btn btn-link" id="cancel"><%= __('Cancel') %></a>
+        </div>
+    </div>
+    <div class="span4" style="background : #f5f5f5; padding : 15px;">
+        <div class="control-group">
+            <%- imageTag(getUrl(req.user.avatar, '64x0'), { class: 'pull-left img thumbnail', style: 'width: 32px; height: 32px; margin-right: 5px' }, '32') %>
+            <%- req.user.displayName %>
+            <br/>
+            <span class="muted">@<%- req.user.username %></span>
+        </div>
+
+        <hr style="border-bottom : solid 15px #fff; margin: 15px -15px;"/>
+
+        <div class="control-group">
+            <label class="control-label" for="createdAt">
+                Publish date
+            </label>
+            <div class="controls">
+                <div class="input-append date" id="createdAtDatePicker">
+                    <%- inputTag({ id: 'createdAt', name: 'createdAt', type: 'text', class: 'input-large', 'data-format': datetimeformat.replace(/DD/ig, 'dd').replace(/YY/ig, 'yy').replace(/HH/, 'hh') })
+                    %><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+        </div>
+    </div>
+</div>
+
+<%- form.end() %>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        //edit controller is in charge of the basic content edit form
+        EditController = function() {
+            var c = this;
+
+            //define form elements
+            c.form = {
+                publishFacebook: $('#publish-facebook'),
+                facebookText: $('#facebook-text'),
+                facebookCharsRemaining: $('#facebook-chars-remaining'),
+                facebookLinkedButton: $('#facebook-linked'),
+                publishTwitter: $('#publish-twitter'),
+                twitterCharsRemaining: $('#twitter-chars-remaining'),
+                twitterText: $('#twitter-text'),
+                twitterLinkedButton: $('#twitter-linked'),
+                title: $('#title'),
+                text: $('#text'),
+                publishButton: $('#publish-button'),
+                status: $('#status'),
+                saveToLibraryButton: $('#save-to-library'),
+                self: $('#content-form'),
+                saveAsDraftButton: $('#save-as-draft'),
+                schedulePublishingButton: $('#schedule-publishing'),
+                schedulePublishingModal: $('#schedule-modal')
+            };
+
+            //publish to facebook toggle
+            c.form.publishFacebook.on('click', function() {
+                c.form.facebookText.toggle();
+                c.form.facebookLinkedButton.button('toggle');
+                updateSocialMedia();
+            });
+
+            //publish to twitter toggle
+            c.form.publishTwitter.on('click', function() {
+                c.form.twitterText.toggle();
+                c.form.twitterLinkedButton.button('toggle');
+                updateSocialMedia();
+            });
+
+            //register text change events to update the twitter and facebook posts
+            if (c.form.text.hasClass('richtext')) {
+                c.form.text.getEditor().on('change', updateSocialMedia);
+            } else {
+                c.form.text.on('keypress', updateSocialMedia);
+            }
+
+            c.form.title.on('keyup', updateSocialMedia);
+
+            //disables text editing for linked social media texts
+            c.form.facebookText.on('focus', function() { if(c.form.facebookLinkedButton.hasClass('active')) this.blur(); });
+            c.form.twitterText.on('focus', function() { if(c.form.twitterLinkedButton.hasClass('active')) this.blur(); });
+
+            //updates twitter and facebook posts
+            function updateSocialMedia() {
+                var text = '';
+
+                if(c.form.title.length > 0) {
+                    if(c.form.title.val()) text += c.form.title.val() + '\n';
+                }
+
+                if(c.form.text.hasClass('richtext')) {
+                    var els = $(c.form.text.val());
+                    $(els).each(function(i, el) {
+                        text += $(el).text() + '\n';
+                    });
+                } else {
+                    text += c.form.text.val();
+                }
+
+                text = text.trim();
+
+                if(c.form.publishTwitter[0].checked) {
+                    if(c.form.twitterLinkedButton.hasClass('active')) {
+                        c.form.twitterText.val(text);
+                        c.form.twitterText.trigger('keyup');
+                    }
+                }
+
+                if(c.form.publishFacebook[0].checked) {
+                    if(c.form.facebookLinkedButton.hasClass('active')) {
+                        c.form.facebookText.val(text);
+                        c.form.facebookText.trigger('keyup');
+                    }
+                }
+            }
+
+            //shows text lengths
+            c.form.twitterText.on('keyup', function() { c.form.twitterCharsRemaining.text(117 - c.form.twitterText.val().length); });
+            c.form.facebookText.on('keyup', function() { c.form.facebookCharsRemaining.text(420 - c.form.facebookText.val().length); });
+
+            //publishes the post
+            c.form.publishButton.on('click', function() {
+                c.form.status.val('published');
+                c.form.self.trigger('submit');
+                return false;
+            });
+
+            //shows the schedule publishing modal
+            c.form.schedulePublishingButton.on('click', function() {
+                c.form.schedulePublishingModal.modal('show');
+                $(this).parents('.btn-group').removeClass('open');
+                return false;
+            });
+
+            //toggles linked text for social media posts
+            c.form.twitterLinkedButton.on('click', function() { setTimeout(updateSocialMedia, 100) });
+            c.form.facebookLinkedButton.on('click', function() { setTimeout(updateSocialMedia, 100) });
+
+            //saves the post to the library
+            c.form.saveToLibraryButton.on('click', function() {
+                c.form.status.val('library');
+                c.form.self.trigger('submit');
+                return false;
+            });
+
+            //saves the post as a draft
+            c.form.saveAsDraftButton.on('click', function() {
+                c.form.status.val('draft');
+                c.form.self.trigger('submit');
+                return false;
+            });
+        };
+
+        setupRichtextEditors('.richtext', { buttons: ['bold', 'italic', '|', 'link', 'image'] });
+
+        $('body').on('focus', '[contenteditable]', function() {
+            var $this = $(this);
+            $this.data('before', $this.html());
+            return $this;
+        }).on('blur keyup paste', '[contenteditable]', function() {
+            var $this = $(this);
+            if ($this.data('before') !== $this.html()) {
+                $this.data('before', $this.html());
+                $this.trigger('change');
+            }
+            return $this;
+        });
+
+        $('#createdAt').val('');
+        var picker = $('#createdAtDatePicker').datetimepicker({
+            orientation: 'left',
+            pick12HourFormat: false
+        }).data('datetimepicker');
+        picker.setDate(new Date('<%- post.createdAt %>').getTime());
+
+        window.controller = new EditController();
+    });
+</script>
+
+<style type="text/css">
+    i.icon-facebook-sign
+    {
+        color : #3b5998;
+    }
+
+    i.icon-twitter-sign
+    {
+        color : #00aced;
+    }
+
+    .linked
+    {
+        margin-left : 5px;
+        color : #000;
+    }
+
+    .create-panels
+    {
+        background: #f8f8f8;
+        padding: 10px;
+    }
+
+    .edit-panels
+    {
+        padding : 10px;
+        background: #eee;
+    }
+
+    .stage-panel
+    {
+        margin-bottom : 10px;
+    }
+
+    .panel
+    {
+        height : 80px;
+        background: #fff;
+        border : solid 3px #ccc;
+        margin-bottom : 4px;
+        overflow: hidden;
+    }
+
+    .panel .controls
+    {
+        position : relative;
+    }
+
+    .panel .controls .inner
+    {
+        position : absolute;
+        right : 0;
+        background: #800;
+        padding : 3px 5px;
+    }
+
+    .panel .controls .inner a
+    {
+        color : #fff;
+    }
+
+    .current-stage .panel
+    {
+        height : 100px;
+        border: solid 3px #800;
+        cursor : move;
+    }
+
+    .current-stage .panel.new
+    {
+        border : dotted 3px #ccc;
+        background: #eee;
+        text-align: center;
+    }
+
+    .current-stage .panel.new i.big
+    {
+        margin-left : 0;
+        font-size : 65px;
+        line-height: 100px;
+    }
+
+    .panel i.big
+    {
+        font-size : 50px;
+        line-height: 80px;
+        color : #ccc;
+        margin-left : 16px;
+    }
+
+    .sidebar
+    {
+        float : right;
+        height : 80px;
+        background: #eee;
+        width : 40px;
+        border-left : solid 3px #ccc;
+    }
+</style>
+
+<form class="form-vertical">
+<div class="modal fade" id="schedule-modal" style="display : none;">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3><%- __('Schedule publishing') %></h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+            <label class="control-label" for="publish-date"><%- __('Enter the intended publish date / time for this post') %></label>
+            <div class="controls">
+                <input type="text" class="span4" id="publish-date" name="createdAt" value="<%- post.createdAt || 'immediately' %>" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="btn-toolbar" style="margin : 0;">
+            <button type="button" class="btn btn-primary"><%- __('Publish') %></button>
+            <a class="btn" data-dismiss="modal"><%- __('Cancel') %></a>
+        </div>
+    </div>
+</div>
+</form>

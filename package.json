@@ -1,0 +1,20 @@
+{
+  "name": "nush-shop",
+  "version": "0.0.5-4",
+  "engines": [
+    "node >= 0.8.0"
+  ],
+  "main": "server.js",
+  "dependencies": {
+    "express": "latest",
+    "compound": "latest"
+  },
+  "devDependencies": {
+    "mocha": "1.8.1",
+    "should": "1.2.2",
+    "semicov": "0.1.1"
+  },
+  "scripts": {
+    "test": "nodeunit test/*/*"
+  }
+}
