@@ -1,0 +1,235 @@
+<% if (!req.query._pjax) { %>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+    <head>
+        <title><%= pageTitle() %></title>
+        <%- metaTag('keywords', req.page.metaKeywords || req.group.metaKeywords) %>
+        <%- metaTag('description', req.page.metaDescription || req.group.metaDescription) %>
+
+        <% if ((req.headers['user-agent'] || '').indexOf('iPad') == -1) { %>
+        <%- metaTag('viewport', 'width=480, user-scalable=no') %>
+        <% } %>
+
+        <%- openGraphTags() %>
+        <%- csrfMetaTag() %>
+
+        <%- metaTag('userid', req.user && req.user.id) %>
+        <%- metaTag('pageId', req.page.id || req.page.url) %>
+        <%- metaTag('groupId', req.group.id) %>
+
+        <% if (req.page.id === req.group.homepage.id) { %>
+            <link type="text/css" rel="stylesheet" href="<%- pathFor('stylesheet').theme('nush-home') %>" id="main-stylesheet" />
+        <% } else { %>
+            <link type="text/css" rel="stylesheet" href="<%- pathFor('stylesheet').theme('nush') %>" id="main-stylesheet" />
+        <% } %>
+        <% if (isPrivileged()) { %>
+        <link rel="stylesheet" href="/javascripts/redactor/redactor.css" />
+        <% } %>
+
+        <style id="preview-stylesheet" type="text/css"></style>
+
+        <% if (req.group.favicon) { %>
+        <link rel="shortcut icon" href="<%- req.group.favicon %>" />
+        <% } %>
+
+        <script type="text/javascript">
+            canEdit = <%- isPrivileged() %>;
+        </script>
+        <%- javascriptIncludeTag(javascripts()) %>
+        <%- contentFor('head') %>
+
+    </head>
+    <body class="<%- req.group.navBarType === 'fixed' ? 'navbar-fixed' : '' %> no-pjax">
+
+    <div id="all">
+    <% } else { %>
+    <!-- pjax title -->
+        <title><%= pageTitle() %></title>
+        <%- metaTag('pageId', req.page.id || req.page.url) %>
+    <% } %>
+
+    <div class="navbar navbar-top <%- req.group.navBarType && req.group.navBarType !== 'default' ? 'navbar-fixed-top':'' %> navbar-type-<%- req.group.navBarType %> navbar-<%- req.group.navBarStyle %>">
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-container">
+
+                    <%- linkTo('<span class="group-name">' + req.group.name + '</span>',
+                        '//' + req.group.homepage.url, {class: 'brand'})  %>
+                    <div>
+                        <%- contentFor('layout.topBar.left') %>
+
+                        <% if (req.user && !request.member && !req.pending && req.group.joinPermissions != 'closed') { %>
+                        <ul class="nav pull-left">
+                            <li><%- linkTo(icon('star') + t('layout.joinGroup'),
+                                pathFor('user').join()) %>
+                            </li>
+                        </ul>
+                        <% } %>
+
+                        <% if (isPrivileged()) { %>
+                        <!-- TODO: we need a way of disabling edit console for the entire admin module -->
+                        <ul class="nav pull-left visible-desktop">
+                            <li><%- linkTo(icon('cog') + t('layout.manageGroup'),
+                                pathFor('admin').index,
+                                {id: 'manage-group-link'}) %>
+                            </li>
+                            <li><%- linkTo(
+                                icon('eye-close') +
+                                icon('eye-open', { style: 'display:none' }) + t('layout.toggleEditConsole'),
+                                '#edit', {
+                                id: 'edit-page-link',
+                                accesskey: 'e'
+                                }) %>
+                            </li>
+                        </ul>
+                        <% } %>
+
+                    </div>
+                    <div class="pull-right">
+
+                        <%- contentFor('layout.topBar.middle') %>
+
+                        <% if (request.user) { var user = request.user; %>
+                        <ul class="nav">
+                            <li class="dropdown" id="menu1">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="/">
+                                    <%= user.displayName || user.username || user.email %>
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu pull-right">
+                                    <li><%- linkTo(icon('user') + t('layout.viewProfile'),
+                                        specialPagePath('profile', { username: req.user.username })) %></li>
+                                    <li><%- linkTo(icon('cogs') + t('layout.editProfile'),
+                                        specialPagePath('account')) %>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li> <%- linkTo('<i class="icon-off"></i> ' + t('layout.signOut'), pathFor('user').logout) %> </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <% } else { %>
+                        <ul class="nav">
+                            <li><%- linkTo(t('layout.signIn'), '#login',
+                                {'data-toggle': "modal"}) %></li>
+                            <% if(req.group.joinPermissions !== 'closed') { %>
+                            <li><%- linkTo(t('layout.joinGroup'), '#register',
+                                {'data-toggle': "modal"}) %></li>
+                            <% } else { %>
+                            <li><%- linkTo(t('layout.register'), '#register',
+                                {'data-toggle': "modal"}) %></li>
+                            <% } %>
+                        </ul>
+                        <% } %>
+
+                        <%- contentFor('layout.topBar.right') %>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <% if (req.pending) { %>
+    <div class="container alert-container">
+        <div class="alert alert-block alert-success">
+            <% if (req.pending.requested) { %>
+            <p>
+                <strong><%- t('layout.groupAccessRequestedTitle') %></strong>
+                <br/>
+                <%- icon('time') + t('layout.groupAccessRequestedDescription') %>
+            </p>
+            <% } else { %>
+            <p>
+
+                <%- icon('info-sign') + t('layout.invitedToGroup') %>
+            </p>
+            <p class="lead">
+                <%- linkTo(icon('ok') + t('layout.acceptInvitation'),
+                    pathFor('user').join(), {class: 'text-success'}) %>
+                /
+                <%- linkTo(t('layout.ignoreInvitation'),
+                    pathFor('user').rejectInvitation(), {class: 'text-success'}) %>
+            </p>
+            <% } %>
+        </div>
+    </div>
+    <% } else if (req.user && req.user.type === 'temporary' && req.url.indexOf(specialPagePath('register')) == -1) { %>
+        <div class="container alert-container">
+            <div class="alert alert-block alert-information">
+                <p>
+                    <strong><%- t('layout.registration.inProgress') %></strong>
+                    <br/>
+                    <%- t([
+                        'layout.registration.suggestProceed',
+                        linkTo(
+                            t('layout.registration.go'),
+                            specialPagePath('register') + '?redirect=' + pathFor('user').join()
+                        )
+                    ]) %>
+                </p>
+            </div>
+        </div>
+    <% } %>
+
+    <div id="main">
+
+        <div id="row-content">
+            <%- body %>
+        </div>
+
+        <div class="container footer-container">
+            <footer>
+                <div class="pull-right">
+                    <i class="icon-bolt"></i>
+                    <span id="pagetimer">
+                        <%- t(['layout.renderSpeed', (Date.now() - startedAt) / 1000]) %>
+                    </span>
+                </div>
+
+                <%- req.group.footerHtml || t('common.bragHatch') %>
+            </footer>
+        </div>
+
+        <%- contentFor('layout.body.end') %>
+
+<% if (!req.query._pjax) { %>
+    </div>
+    </div>
+
+    <div id="blank-modal" class="modal fade"></div>
+
+    <% if (!request.user) { %>
+        <% include _register %>
+        <% include _reset-password %>
+        <% include _login %>
+    <% } else if (user.canEdit) { %>
+        <% include _webfonts %>
+        <div id="editConsoleHolder"></div>
+    <% }%>
+
+    <%- contentFor('javascripts') %>
+
+    <% if (req.group.googleAnalyticsId) { %>
+
+        <script type="text/javascript">
+
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', '<%- req.group.googleAnalyticsId %>']);
+            _gaq.push(['_setDomainName', '<%- req.headers.host %>']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+        </script>
+
+    <% } %>
+
+</body>
+</html>
+
+
+<% } %>

@@ -13,8 +13,8 @@ module.exports = function instantiateApp() {
     var app = hc();
 
     app.set('session-store', {ttl: 86400 * 365});
-    app.set('database', require(process.env.DB_CONFIG || './config/database')[app.get('env')]);
-    
+    app.set('database', require(process.env.DB_CONFIG || __dirname + '/config/database')[app.get('env')]);
+
     app.compound.on('after extensions', function () {
         instantiateApp.init(app.compound);
     });
@@ -22,7 +22,7 @@ module.exports = function instantiateApp() {
         app.compound.utils.debug('Application loading time ' +
             (Date.now() - time) + 'ms');
     });
-    
+
     return app;
 };
 

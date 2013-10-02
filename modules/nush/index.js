@@ -1,12 +1,22 @@
 module.exports = function (c) {
     if (c) {
         c.hatch.themes.registerTheme({
+            title: 'Nush Home',
+            name: 'nush-home',
+            variables: 'http://localhost:3000/assets/theme/home/variables.less',
+            bootswatch: 'http://localhost:3000/assets/theme/home/bootswatch.less'
+        });
+
+        c.hatch.themes.registerTheme({
             title: 'Nush',
             name: 'nush',
-            variables: 'http://localhost:3000/assets/theme/variables.less',
-            bootswatch: 'http://localhost:3000/assets/theme/bootswatch.less'
+            variables: 'http://localhost:3000/assets/theme/nush/variables.less',
+            bootswatch: 'http://localhost:3000/assets/theme/nush/bootswatch.less'
         });
     }
+
+    // override application layouts
+    c.structure.views['layouts/application_layout'] = __dirname + '/app/views/layouts/application_layout.ejs';
 
     var contentTypes = {
         product: { icon: 'picture' }

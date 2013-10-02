@@ -8,7 +8,9 @@
   "dependencies": {
     "hatch": "https://hatch-autologger:hatchpassword1@github.com/inventures/hatchjs/tarball/master",
     "express": "latest",
-    "compound": "latest"
+    "compound": "latest",
+    "ejs": "latest",
+    "underscore": "latest"
   },
   "devDependencies": {
     "mocha": "1.8.1",
@@ -17,5 +19,9 @@
   },
   "scripts": {
     "test": "nodeunit test/*/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:marcusgreenwood/nush-shop.git"
   }
 }

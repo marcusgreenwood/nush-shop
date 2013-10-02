@@ -1,5 +1,11 @@
 <div class="product-details row">
-    <a href="//<%- post.url %>">
+    <div class="span6">
         <img src="<%- post.attachments[0].url %>" class="span12" />
-    </a>
+    </div>
+    <div class="span6">
+        <h2><%- post.title %></h2>
+        <p>
+            <%- post.description %>
+        </p>
+    </div>
 </div>

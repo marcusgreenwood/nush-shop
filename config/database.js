@@ -2,9 +2,9 @@ module.exports =
   { "development":
     { "driver":   "redis-hq"
     , "prefix":   "dev"
-    , "database": 0
+    , "database": 4
     , "url": "localhost"
-    , "fulltext": {driver: 'solr'}
+    , "fulltext": {database: 5}
     , "session": {database: 10}
     }
   , "test":
@@ -17,18 +17,8 @@ module.exports =
   , "production":
     { "driver":   "redis-hq"
     , "prefix":   "prod"
-    , "database": 2
-    , "fulltext": {
-        driver: 'solr',
-        host: 'index.websolr.com',
-        port: 80,
-        cores: {
-            'prod-Content': '37963d1aa5c',
-            'prod-Activity': 'de55defbcfd',
-            'prod-User': '6351314a5df',
-            'global': '3e73a2f2c7d'
-        }
-    }
+    , "database": 0
+    , "fulltext": {database: 5}
     , "session": {database: 10}
     }
   };
