@@ -10,10 +10,12 @@ var numCPUs = require('os').cpus().length;
  * @return {ExpressApp} app.
  */
 module.exports = function instantiateApp() {
+    // override the default db config
+    process.env.DB_CONFIG = __dirname + '/config/database.js';
+
     var app = hc();
 
     app.set('session-store', {ttl: 86400 * 365});
-    app.set('database', require(process.env.DB_CONFIG || __dirname + '/config/database')[app.get('env')]);
 
     app.compound.on('after extensions', function () {
         instantiateApp.init(app.compound);
