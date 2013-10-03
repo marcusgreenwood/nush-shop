@@ -154,7 +154,7 @@
         </div>
     </div>
     <% } else if (req.user && req.user.type === 'temporary' && req.url.indexOf(specialPagePath('register')) == -1) { %>
-        <div class="container alert-container">
+        <div class="container-fluid alert-container">
             <div class="alert alert-block alert-information">
                 <p>
                     <strong><%- t('layout.registration.inProgress') %></strong>
@@ -177,7 +177,7 @@
             <%- body %>
         </div>
 
-        <div class="container footer-container">
+        <div class="container-fluid footer-container">
             <footer>
                 <%- req.group.footerHtml || t('common.bragHatch') %>
             </footer>

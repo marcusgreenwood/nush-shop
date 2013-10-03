@@ -3,15 +3,15 @@
 // -----------------------------------------------------
 
 
-#row-content > .container
+#row-content > .container-fluid
 {
     background: #fff;
     color: #000;
 }
 
-.header-container .container
+.header-container .container-fluid
 {
-    background: url(/assets/nush-logo-black.png) no-repeat center left;
+    background: url(/assets/nush-logo-black.png) no-repeat 28px 0px;
     min-height: 150px;
 }
 
@@ -182,7 +182,9 @@ div.subnav {
     background-image: none;
     border: none;
     border-bottom: none;
+    font-size : 12px;
 
+    float: right;
     text-transform: uppercase;
 
     .nav > li > a,
@@ -191,7 +193,7 @@ div.subnav {
         border: none;
 
         padding: 11px 0px 5px 0px;
-        margin-left: 40px;
+        margin-left: 60px;
         margin-right: 10px;
         color : #fff;
     }
@@ -600,8 +602,10 @@ legend, label {
 footer
 {
     background: #999;
-    padding: 20px 20px 10px;
+    padding: 20px 30px 10px;
     color: #fff;
+    margin: 0 -15px;
+    margin-bottom: 0 ! important;
 }
 
 // MEDIA QUERIES

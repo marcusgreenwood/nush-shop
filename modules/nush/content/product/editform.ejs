@@ -17,10 +17,6 @@
 <input type="hidden" name="status" id="status" value="<%- post.status || 'published' %>" />
 <input type="hidden" name="stage" id="stage" value="<%- post.stage || req.query.stage == '1' || 'false' %>" />
 
-<% if(!post.id) { %>
-    <input type="hidden" name="stagePosition" id="stagePosition" value="0" />
-<% } %>
-
 <div class="row-fluid">
     <div class="span8">
 
@@ -291,6 +287,15 @@
                     <%- inputTag({ id: 'createdAt', name: 'createdAt', type: 'text', class: 'input-large', 'data-format': datetimeformat.replace(/DD/ig, 'dd').replace(/YY/ig, 'yy').replace(/HH/, 'hh') })
                     %><span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                 </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="createdAt">
+                Priority
+            </label>
+            <div class="controls">
+                <%- inputTag({ id: 'priority', name: 'priority', type: 'text', class: 'input-large' }) %>
             </div>
         </div>
     </div>
