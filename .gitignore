@@ -24,6 +24,7 @@ dump.rdb
 coverage
 
 config/nginx/shot_api.dev
+public/upload
 
 node_modules
 npm-debug.log
