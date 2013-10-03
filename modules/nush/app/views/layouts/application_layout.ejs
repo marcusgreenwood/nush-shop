@@ -18,9 +18,9 @@
         <%- metaTag('groupId', req.group.id) %>
 
         <% if (req.page.id === req.group.homepage.id) { %>
-            <link type="text/css" rel="stylesheet" href="<%- pathFor('stylesheet').theme('nush-home') %>" id="main-stylesheet" />
+            <link type="text/css" rel="stylesheet" href="/do/stylesheet/theme/nush-home" id="main-stylesheet" />
         <% } else { %>
-            <link type="text/css" rel="stylesheet" href="<%- pathFor('stylesheet').theme('nush') %>" id="main-stylesheet" />
+            <link type="text/css" rel="stylesheet" href="/do/stylesheet/theme/nush" id="main-stylesheet" />
         <% } %>
         <% if (isPrivileged()) { %>
         <link rel="stylesheet" href="/javascripts/redactor/redactor.css" />
@@ -179,13 +179,6 @@
 
         <div class="container footer-container">
             <footer>
-                <div class="pull-right">
-                    <i class="icon-bolt"></i>
-                    <span id="pagetimer">
-                        <%- t(['layout.renderSpeed', (Date.now() - startedAt) / 1000]) %>
-                    </span>
-                </div>
-
                 <%- req.group.footerHtml || t('common.bragHatch') %>
             </footer>
         </div>

@@ -10,6 +10,7 @@
     "express": "latest",
     "compound": "latest",
     "ejs": "latest",
+    "vash": "latest",
     "underscore": "latest"
   },
   "devDependencies": {

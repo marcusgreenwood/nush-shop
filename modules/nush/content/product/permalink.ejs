@@ -1,11 +1,25 @@
 <div class="product-details row">
     <div class="span6">
-        <img src="<%- post.attachments[0].url %>" class="span12" />
+        <img src="<%- post.attachments[0].url %>" class="span12"  />
     </div>
-    <div class="span6">
-        <h2><%- post.title %></h2>
-        <p>
-            <%- post.description %>
-        </p>
+    <div class="offset6">
+        <div class="product-text">
+            <h2><%- post.title %></h2>
+            <p>
+                <%- post.text %>
+            </p>
+        </div>
     </div>
 </div>
+
+<style>
+    .product-details
+    {
+        margin-bottom: 10px;
+    }
+
+    .product-text
+    {
+        margin-left: 20px;
+    }
+</style>

@@ -1,12 +1,13 @@
 <div class="product-list-holder-<%- displayMode %>">
     <div class="product-list row-fluid">
-        <% posts.forEach(function (post, i) { %>
-            <%- renderContent(post, displayMode) %>
-
-            <% if ((i+1) % 3 === 0) { %>
-                </div><div class="product-list row-fluid">
-            <% } %>
-        <% }) %>
+        <% for(var i=0; i<cols; i++) { %>
+            <div class="span<%- 12/cols %>">
+                <% posts.forEach(function (post, j) { %>
+                    <% if((i-j) % cols !== 0) { return; } %>
+                    <%- renderContent(post, displayMode) %>
+                <% }) %>
+            </div>
+        <% } %>
     </div>
 
     <% if (posts.length === 0) { %>
@@ -22,9 +23,8 @@
         padding : 10px 20px 0;
     }
 
-    .product-list-holder-view .span4
+    .product-list-holder-view .product
     {
-        margin-top : 10px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
 </style>

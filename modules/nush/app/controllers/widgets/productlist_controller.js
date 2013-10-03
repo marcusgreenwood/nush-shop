@@ -15,6 +15,7 @@ action(function show(c) {
     c.Content.all({ where: cond }, function (err, posts) {
         c.locals.posts = posts;
         c.locals.displayMode = self.widget.settings.displayMode || 'view';
+        c.locals.cols = self.widget.settings.cols || 3;
 
         render();
     });
