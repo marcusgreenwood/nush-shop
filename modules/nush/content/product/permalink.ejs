@@ -1,6 +1,8 @@
 <div class="product-details row-fluid">
     <div class="span6">
-        <img src="<%- post.attachments[0].url %>" class="span12"  />
+        <a href="<%- getUrl(post.attachments[0]) %>" rel="zoom">
+            <img src="<%- getUrl(post.attachments[0], '640x0') %>" class="span12"  />
+        </a>
     </div>
     <div class="offset6">
         <div class="product-text">
