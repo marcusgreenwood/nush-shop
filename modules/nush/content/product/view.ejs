@@ -1,4 +1,4 @@
-<div class="product">
+<div class="product" style="<%- post.height && ('height: ' + post.height + 'px; overflow: hidden;') %>">
     <a href="//<%- post.url %>">
         <img src="<%- getUrl(post.attachments[0], '640x0') %>" />
     </a>

@@ -1,3 +1,5 @@
+var _ = require('../../../../node_modules/underscore');
+
 layout('widgets');
 load('widgets/common');
 
@@ -13,6 +15,9 @@ action(function show(c) {
     }
 
     c.Content.all({ where: cond }, function (err, posts) {
+        // sort the posts
+        posts = _.sortBy(posts, function (post) { return post.priority || 10; });
+
         c.locals.posts = posts;
         c.locals.displayMode = self.widget.settings.displayMode || 'view';
         c.locals.cols = self.widget.settings.cols || 3;

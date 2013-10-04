@@ -161,15 +161,10 @@
             update: updateMainImage
         });
 
-        $(window).on('click', '#upload-images a.delete', function() {
-            $(this).parents('li').remove();
+        $("#main-image a.delete").on('click', function() {
+            $('#upload-images').empty();
             updateThumbnails();
             updateMainImage();
-            return false;
-        });
-
-        $("#main-image a.delete").on('click', function() {
-            $("#upload-images li:first-child a.delete").trigger('click');
             return false;
         });
 
@@ -295,7 +290,16 @@
                 Priority
             </label>
             <div class="controls">
-                <%- inputTag({ id: 'priority', name: 'priority', type: 'text', class: 'input-large' }) %>
+                <%- inputTag({ id: 'priority', name: 'priority', type: 'text', class: 'input-large', value: post.priority }) %>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="height">
+                Max height in list (px)
+            </label>
+            <div class="controls">
+                <%- inputTag({ id: 'height', name: 'height', type: 'text', class: 'input-large', value: post.height }) %>
             </div>
         </div>
     </div>
