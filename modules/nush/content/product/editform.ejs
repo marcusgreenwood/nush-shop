@@ -161,7 +161,7 @@
             update: updateMainImage
         });
 
-        $("#upload-images a.delete").on('click', function() {
+        $(window).on('click', '#upload-images a.delete', function() {
             $(this).parents('li').remove();
             updateThumbnails();
             updateMainImage();
