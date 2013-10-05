@@ -112,15 +112,23 @@ div.inline-edit
 
     div.subnav
     {
-        float : none ! important;
         margin-bottom: 0 ! important;
+        clear: left;
 
         .nav > li > a
         {
-            margin-left : 0 ! important;
+            margin-left : 26px ! important;
             border : 0 ! important;
             background: #fff ! important;
+            font-size: 20px;
+            line-height: 1.3;
         }
+    }
+
+    div.subnav:first-child
+    {
+        float : left ! important;
+        margin-top: -90px;
     }
 
     .header-container .container-fluid
@@ -136,6 +144,20 @@ div.inline-edit
     #row-content > .container-fluid
     {
         margin : 0 -15px;
+    }
+
+    .offset6
+    {
+        padding: 0 ! important;
+        margin: 0 ! important;
+    }
+
+    .product-text
+    {
+        padding: 12px ! important;
+        margin-top: 0 ! important;
+        font-size: 17px;
+        line-height: 1.3;
     }
 }
 
