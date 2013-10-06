@@ -193,11 +193,11 @@
 
     <div id="blank-modal" class="modal fade"></div>
 
-    <% if (!request.user) { %>
+    <% if (!request.user && req.page.url.indexOf('/login') > -1) { %>
         <% include _register %>
         <% include _reset-password %>
         <% include _login %>
-    <% } else if (user.canEdit) { %>
+    <% } else if (user && user.canEdit) { %>
         <% include _webfonts %>
         <div id="editConsoleHolder"></div>
     <% }%>
