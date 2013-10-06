@@ -4,6 +4,7 @@
             <div class="span<%- 12/cols %>">
                 <% posts.forEach(function (post, j) { %>
                     <% if((i-j) % cols !== 0) { return; } %>
+                    <% post.allowDifferentSizes = allowDifferentSizes; %>
                     <%- renderContent(post, displayMode) %>
                 <% }) %>
             </div>

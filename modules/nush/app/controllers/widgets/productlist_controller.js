@@ -21,6 +21,7 @@ action(function show(c) {
         c.locals.posts = posts;
         c.locals.displayMode = self.widget.settings.displayMode || 'view';
         c.locals.cols = self.widget.settings.cols || 3;
+        c.locals.allowDifferentSizes = self.widget.settings.allowDifferentSizes === 'yes';
 
         render();
     });
