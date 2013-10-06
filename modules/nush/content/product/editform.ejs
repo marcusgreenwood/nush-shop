@@ -161,10 +161,16 @@
             update: updateMainImage
         });
 
-        $("#main-image a.delete").on('click', function() {
-            $('#upload-images').empty();
+        $(document).on('click', '#upload-images .thumbnails a.delete', function() {
+            $(this).parents('li').remove();
+
             updateThumbnails();
             updateMainImage();
+            return false;
+        });
+
+        $(document).on('click', '#main-image a.delete', function() {
+            $('#upload-images .delete:first').trigger('click');
             return false;
         });
 
