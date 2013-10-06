@@ -48,6 +48,7 @@
         <%- metaTag('pageId', req.page.id || req.page.url) %>
     <% } %>
 
+    <% if (req.page.url.indexOf('/login') > -1 || (req.user && req.user.canEdit)) { %>
     <div class="navbar navbar-top <%- req.group.navBarType && req.group.navBarType !== 'default' ? 'navbar-fixed-top':'' %> navbar-type-<%- req.group.navBarType %> navbar-<%- req.group.navBarStyle %>">
         <div class="navbar-inner">
             <div class="container">
@@ -128,6 +129,7 @@
             </div>
         </div>
     </div>
+    <% } %>
 
     <% if (req.pending) { %>
     <div class="container alert-container">
